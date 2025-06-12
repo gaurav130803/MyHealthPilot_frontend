@@ -22,7 +22,7 @@ const WorkoutLogger = () => {
         `https://exercisedb.p.rapidapi.com/exercises/name/${searchText}`,
         {
           headers: {
-            'X-RapidAPI-Key': process.env.X-RapidAPI-Key,
+            'X-RapidAPI-Key': '2023976339msh36f0dcb1dc43a76p1270bbjsn7c005e5c53ee',
             'X-RapidAPI-Host': 'exercisedb.p.rapidapi.com',
           },
         }
