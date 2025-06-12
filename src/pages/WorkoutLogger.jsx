@@ -76,7 +76,7 @@ const WorkoutLogger = () => {
 
     try {
       await axios.post(
-        'http://localhost:5000/api/workout/log',
+        'https://myhealthpilot-backend.onrender.com/api/workout/log',
         {
           username,
           title: workoutTitle,
@@ -105,7 +105,7 @@ const WorkoutLogger = () => {
     const today = new Date().toISOString().split('T')[0];
 
     try {
-      const res = await axios.get(`http://localhost:5000/api/workout/history/${username}`, {
+      const res = await axios.get(`https://myhealthpilot-backend.onrender.com/api/workout/history/${username}`, {
         headers: {
           Authorization: `Bearer ${token}`,
         },

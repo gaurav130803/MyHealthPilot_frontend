@@ -15,7 +15,7 @@ const WaterChart = () => {
     const date = new Date().toISOString().split('T')[0];
 
     try {
-      const res = await axios.get('http://localhost:5000/api/water/get', {
+      const res = await axios.get('https://myhealthpilot-backend.onrender.com/api/water/get', {
         headers: { Authorization: `Bearer ${token}` },
         params: { username, date },
       });
@@ -34,7 +34,7 @@ const WaterChart = () => {
     const amount = ml / 1000; // convert to liters
 
     try {
-      const res = await axios.post('http://localhost:5000/api/water/log', {
+      const res = await axios.post('https://myhealthpilot-backend.onrender.com/api/water/log', {
         username,
         date,
         amount,

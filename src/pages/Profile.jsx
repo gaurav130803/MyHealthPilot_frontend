@@ -34,7 +34,7 @@ const Profile = () => {
       }
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/auth/profile`, {
+        const res = await axios.get(`https://myhealthpilot-backend.onrender.com/api/auth/profile`, {
           headers: { Authorization: `Bearer ${token}` },
           params: { username },
         });
@@ -66,7 +66,7 @@ const Profile = () => {
   const handleSave = async () => {
     const token = localStorage.getItem('accessToken');
     try {
-      const res = await axios.put(`http://localhost:5000/api/auth/updateprofile`, profile, {
+      const res = await axios.put(`https://myhealthpilot-backend.onrender.com/api/auth/updateprofile`, profile, {
         headers: { Authorization: `Bearer ${token}` },
       });
 

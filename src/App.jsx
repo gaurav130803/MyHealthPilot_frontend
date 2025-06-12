@@ -22,7 +22,7 @@ function App() {
 
       try {
         const res = await axios.get(
-          `http://localhost:5000/api/workout/history/${username}`,
+          `https://myhealthpilot-backend.onrender.com/api/workout/history/${username}`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

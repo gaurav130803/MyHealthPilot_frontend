@@ -9,7 +9,7 @@ const Register = () => {
   const handleSubmit = async(values) => {
     console.log('Register:', values);
 
-    const response= await axios.post("http://localhost:5000/api/auth/register",values);
+    const response= await axios.post("https://myhealthpilot-backend.onrender.com/api/auth/register",values);
 
     console.log(response);
     

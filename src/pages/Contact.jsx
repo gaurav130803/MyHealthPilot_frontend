@@ -15,7 +15,7 @@ const Contact = () => {
     }
 
     try {
-      const res = await axios.post('http://localhost:5000/api/auth/contact', {
+      const res = await axios.post('https://myhealthpilot-backend.onrender.com/api/auth/contact', {
         email,
         message,
       });

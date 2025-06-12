@@ -19,7 +19,7 @@ const CalorieProgressRing = ({ date }) => {
 
       try {
         // ✅ Fetch Calorie Goal
-        const profileRes = await axios.get('http://localhost:5000/api/auth/profile', {
+        const profileRes = await axios.get('https://myhealthpilot-backend.onrender.com/api/auth/profile', {
           headers: { Authorization: `Bearer ${token}` },
           params: { username },
         });
@@ -33,7 +33,7 @@ const CalorieProgressRing = ({ date }) => {
         }
 
         // ✅ Fetch Meals
-        const mealRes = await axios.get('http://localhost:5000/api/meals/getmeal', {
+        const mealRes = await axios.get('https://myhealthpilot-backend.onrender.com/api/meals/getmeal', {
           headers: { Authorization: `Bearer ${token}` },
           params: { username, date },
         });

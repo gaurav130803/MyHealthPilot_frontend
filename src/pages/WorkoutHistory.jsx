@@ -17,7 +17,7 @@ const WorkoutHistory = () => {
       if (!username || !token) return;
 
       try {
-        const res = await axios.get(`http://localhost:5000/api/workout/history/${username}`, {
+        const res = await axios.get(`https://myhealthpilot-backend.onrender.com/api/workout/history/${username}`, {
           headers: { Authorization: `Bearer ${token}` },
         });
         if (res.data.success) setHistory(res.data.workouts);
@@ -31,7 +31,7 @@ const WorkoutHistory = () => {
 
   const handleDelete = async (workoutId) => {
     try {
-      const res = await axios.delete(`http://localhost:5000/api/workout/${workoutId}`, {
+      const res = await axios.delete(`https://myhealthpilot-backend.onrender.com/api/workout/${workoutId}`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       if (res.data.success) {
@@ -59,7 +59,7 @@ const WorkoutHistory = () => {
   const saveEditedWorkout = async () => {
     try {
       const res = await axios.put(
-        `http://localhost:5000/api/workout/${username}/${editedWorkout._id}`,
+        `https://myhealthpilot-backend.onrender.com/api/workout/${username}/${editedWorkout._id}`,
         editedWorkout,
         {
           headers: { Authorization: `Bearer ${token}` },

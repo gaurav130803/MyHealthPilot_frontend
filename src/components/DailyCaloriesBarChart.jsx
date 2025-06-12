@@ -18,7 +18,7 @@ const DailyCaloriesBarChart = ({ goal = 3000 }) => {
       }
 
       try {
-        const res = await axios.get('http://localhost:5000/api/meals/gethistory', {
+        const res = await axios.get('https://myhealthpilot-backend.onrender.com/api/meals/gethistory', {
           headers: { Authorization: `Bearer ${token}` },
           params: { username },
         });

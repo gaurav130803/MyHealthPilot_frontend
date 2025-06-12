@@ -58,7 +58,7 @@ const CalorieDetailPage = () => {
       }
 
       try {
-        const res = await axios.get('http://localhost:5000/api/auth/profile', {
+        const res = await axios.get('https://myhealthpilot-backend.onrender.com/api/auth/profile', {
           headers: { Authorization: `Bearer ${token}` },
           params: { username },
         });
@@ -89,7 +89,7 @@ const CalorieDetailPage = () => {
       }
 
       try {
-        const res = await axios.get('http://localhost:5000/api/meals/getmeal', {
+        const res = await axios.get('https://myhealthpilot-backend.onrender.com/api/meals/getmeal', {
           headers: { Authorization: `Bearer ${token}` },
           params: { username, date: selectedDate },
         });
@@ -170,7 +170,7 @@ const CalorieDetailPage = () => {
 
     try {
       const res = await axios.post(
-        'http://localhost:5000/api/meals/addmeal',
+        'https://myhealthpilot-backend.onrender.com/api/meals/addmeal',
         {
           username,
           date: selectedDate,
