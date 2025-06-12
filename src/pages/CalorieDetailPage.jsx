@@ -1,10 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import Navbar from '../components/Navbar';
 import CalorieProgressRing from '../components/CalorieProgressRing';
 import { toast } from 'react-toastify';
 import axios from 'axios';
 import 'react-toastify/dist/ReactToastify.css';
 import DailyCaloriesBarChart from '../components/DailyCaloriesBarChart';
+import debounce from 'lodash.debounce';
 
 const APP_ID = 'c164bea0';
 const APP_KEY = '689d98ae585534e8c545e374797c87f0';
@@ -27,6 +28,7 @@ const CalorieDetailPage = () => {
   const [selectedFood, setSelectedFood] = useState(null);
   const [quantity, setQuantity] = useState(100);
   const [calorieGoal, setCalorieGoal] = useState(null);
+  const [suggestions, setSuggestions] = useState([]); // 🔥 Added
 
   const getTotal = (meal) =>
     meals[meal].reduce((sum, item) => sum + item.calories, 0);
@@ -37,6 +39,7 @@ const CalorieDetailPage = () => {
     setFoodQuery('');
     setSelectedFood(null);
     setQuantity(100);
+    setSuggestions([]);
   };
 
   const closeModal = () => {
@@ -44,9 +47,9 @@ const CalorieDetailPage = () => {
     setFoodQuery('');
     setSelectedFood(null);
     setQuantity(100);
+    setSuggestions([]);
   };
 
-  // 🔄 Fetch calorie goal from backend
   useEffect(() => {
     const fetchGoal = async () => {
       const token = localStorage.getItem('accessToken');
@@ -58,7 +61,7 @@ const CalorieDetailPage = () => {
       }
 
       try {
-        const res = await axios.get('https://myhealthpilot-backend.onrender.com/api/auth/profile', {
+        const res = await axios.get('http://localhost:5000/api/auth/profile', {
           headers: { Authorization: `Bearer ${token}` },
           params: { username },
         });
@@ -77,7 +80,6 @@ const CalorieDetailPage = () => {
     fetchGoal();
   }, []);
 
-  // 🔄 Fetch meals when date changes
   useEffect(() => {
     const fetchMeals = async () => {
       const username = localStorage.getItem('username');
@@ -89,7 +91,7 @@ const CalorieDetailPage = () => {
       }
 
       try {
-        const res = await axios.get('https://myhealthpilot-backend.onrender.com/api/meals/getmeal', {
+        const res = await axios.get('http://localhost:5000/api/meals/getmeal', {
           headers: { Authorization: `Bearer ${token}` },
           params: { username, date: selectedDate },
         });
@@ -108,36 +110,39 @@ const CalorieDetailPage = () => {
     fetchMeals();
   }, [selectedDate]);
 
-  const handleSearch = async () => {
-    if (!foodQuery.trim()) return;
-    setLoading(true);
-
-    try {
-      const res = await axios.get(
-        `https://api.edamam.com/api/food-database/v2/parser`,
-        {
-          params: {
-            ingr: foodQuery,
-            app_id: APP_ID,
-            app_key: APP_KEY,
-          },
-        }
-      );
-
-      const food = res.data.hints[0]?.food;
-
-      if (food) {
-        setSelectedFood(food);
-      } else {
-        toast.error('Food not found.');
+  // 🔥 Debounced suggestion fetch
+  const debouncedSearch = useCallback(
+    debounce(async (query) => {
+      if (!query) {
+        setSuggestions([]);
+        return;
       }
-    } catch (error) {
-      console.error('Fetch error:', error);
-      toast.error('Failed to fetch food info.');
-    } finally {
-      setLoading(false);
-    }
-  };
+
+      try {
+        const res = await axios.get(
+          `https://api.edamam.com/api/food-database/v2/parser`,
+          {
+            params: {
+              ingr: query,
+              app_id: APP_ID,
+              app_key: APP_KEY,
+            },
+          }
+        );
+
+        const foods = res.data.hints.map((hint) => hint.food);
+        setSuggestions(foods);
+      } catch (error) {
+        console.error('Fetch error:', error);
+        toast.error('Failed to fetch suggestions.');
+      }
+    }, 500),
+    []
+  );
+
+  useEffect(() => {
+    debouncedSearch(foodQuery);
+  }, [foodQuery, debouncedSearch]);
 
   const addFoodWithQuantity = async () => {
     if (!selectedFood) return;
@@ -170,7 +175,7 @@ const CalorieDetailPage = () => {
 
     try {
       const res = await axios.post(
-        'https://myhealthpilot-backend.onrender.com/api/meals/addmeal',
+        'http://localhost:5000/api/meals/addmeal',
         {
           username,
           date: selectedDate,
@@ -246,10 +251,10 @@ const CalorieDetailPage = () => {
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Modal with Suggestions */}
       {showModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-gray-800 p-6 rounded-lg w-80">
+          <div className="bg-gray-800 p-6 rounded-lg w-80 max-h-[90vh] overflow-y-auto">
             <h3 className="text-xl mb-4 font-semibold text-green-400">
               Add Food to {selectedMeal}
             </h3>
@@ -261,8 +266,23 @@ const CalorieDetailPage = () => {
                   value={foodQuery}
                   onChange={(e) => setFoodQuery(e.target.value)}
                   placeholder="Enter food name"
-                  className="w-full px-3 py-2 mb-4 rounded bg-gray-700 text-white focus:outline-none"
+                  className="w-full px-3 py-2 mb-2 rounded bg-gray-700 text-white focus:outline-none"
                 />
+
+                <ul className="mb-4 max-h-40 overflow-y-auto border border-gray-600 rounded">
+                  {suggestions.map((food, idx) => (
+                    <li
+                      key={idx}
+                      className="px-3 py-1 hover:bg-green-600 cursor-pointer text-sm"
+                      onClick={() => {
+                        setSelectedFood(food);
+                        setSuggestions([]);
+                      }}
+                    >
+                      {food.label}
+                    </li>
+                  ))}
+                </ul>
 
                 <div className="flex justify-between">
                   <button
@@ -270,13 +290,6 @@ const CalorieDetailPage = () => {
                     className="bg-red-500 px-4 py-2 rounded hover:bg-red-600 transition"
                   >
                     Cancel
-                  </button>
-                  <button
-                    onClick={handleSearch}
-                    disabled={loading}
-                    className="bg-green-500 px-4 py-2 rounded hover:bg-green-600 transition"
-                  >
-                    {loading ? 'Searching...' : 'Search'}
                   </button>
                 </div>
               </>
