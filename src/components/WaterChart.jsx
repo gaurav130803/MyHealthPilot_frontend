@@ -47,7 +47,7 @@ const WaterChart = () => {
         toast.success(`Added ${ml}ml`);
       }
     } catch (err) {
-      toast.error('Failed to log water');
+      //toast.error('Failed to log water');
     }
 
     setIsModalVisible(false);

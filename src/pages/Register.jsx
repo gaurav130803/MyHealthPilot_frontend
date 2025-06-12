@@ -1,19 +1,25 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import Navbar from '../components/Navbar';
 import { Form, Input, Button } from 'antd';
-
 import axios from 'axios';
+import { toast } from 'react-toastify';
 
 const Register = () => {
-  const handleSubmit = async(values) => {
-    console.log('Register:', values);
+  const navigate = useNavigate();
 
-    const response= await axios.post("https://myhealthpilot-backend.onrender.com/api/auth/register",values);
-
-    console.log(response);
-    
-
+  const handleSubmit = async (values) => {
+    try {
+      const response = await axios.post(
+        "https://myhealthpilot-backend.onrender.com/api/auth/register",
+        values
+      );
+      toast.success('Registration successful!');
+      navigate('/login');
+    } catch (err) {
+      console.error(err);
+      toast.error('Registration failed. Try again.');
+    }
   };
 
   const wrapperStyle = {
@@ -28,10 +34,9 @@ const Register = () => {
     width: '100%',
   };
 
-  // Style for the label so it aligns with input start
   const labelStyle = {
     marginLeft: '3rem',
-    color: '#D1D5DB', // Tailwind text-gray-300
+    color: '#D1D5DB',
   };
 
   return (
@@ -67,7 +72,8 @@ const Register = () => {
             label={<span style={labelStyle} className="text-sm">Email</span>}
             name="email"
             rules={[
-              {  type: 'email', message: 'Please enter a valid email' },
+              {  message: 'Please enter your email' },
+              { type: 'email', message: 'Please enter a valid email' },
             ]}
           >
             <div style={wrapperStyle}>
@@ -83,7 +89,7 @@ const Register = () => {
           <Form.Item
             label={<span style={labelStyle} className="text-sm">Password</span>}
             name="password"
-            rules={[{ message: 'Please enter your password' }]}
+            rules={[{  message: 'Please enter your password' }]}
           >
             <div style={wrapperStyle}>
               <Input.Password
